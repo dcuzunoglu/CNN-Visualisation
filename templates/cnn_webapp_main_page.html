@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+    <script src=/static/jquery.min.js></script>
+
+    <!-- Title SETUP -->
+    <head>
+        <meta charset="utf-8"/>
+        <title>CNN Flower Predictor</title>
+    </head>
+
+    <body>
+
+        <!-- HEADING -->
+        <div class="heading">
+            <h1 style="text-align: center;">CNN Flower Predictor</h1>
+        </div>
+
+        <div class="image-placeholder">
+            <p style="text-align: center;">
+                <img src=/static/image_00001.jpg align="middle" id="main-image" width="1080" height="720">
+            </p>
+        </div>
+
+        <!-- DROPDOWN MENU AND VISUALISATION BUTTON  -->
+        <div class="dropdown-and-button">
+
+            <p style="text-align: center;">
+                <select id="dropdown-menu" class="dropdown">
+                    {% for image in all_images %}
+                    <option value="{{image}}">{{image}}</option>
+                    {% endfor %}
+                </select>
+
+                <button style="background-color: #4CAF50;"
+                        onclick="callConvNet()"
+                        class="visualise-btn"
+                        id="button-visualise">Visualise
+                </button>
+            </p>
+        </div>
+
+        <!-- STYLING FOR THE CLASSES -->
+        <style>
+
+        * {
+            box-sizing: border-box;
+            font-family: "Helvetica";
+        }
+
+        .heading {
+            color: #777777;
+        }
+
+        .visualise-btn {
+            font-family: "Helvetica";
+            color: white;
+            margin-top: 5%%;
+            min-width: 15%;
+            padding: 1%;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropdown {
+            font-family: "Helvetica";
+            margin-top: 5%%;
+            min-width: 15%;
+            padding: 1%;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+        </style>
+
+        <!-- JAVASCRIPT -->
+        <script>
+            function callConvNet(){
+                var dropdownElement = document.getElementById("dropdown-menu");
+                var selectedValue = dropdownElement.options[dropdownElement.selectedIndex].value;
+
+                var jqXHR = $.ajax({
+                    type: "POST",
+                    dataType: "text",
+                    url: "/convnet/",
+                    async: false,
+                    data: {imageName: selectedValue}
+
+                });
+
+                outputPath = jqXHR.responseText;
+                console.log(outputPath)
+                document.getElementById("main-image").src="/static/0" + selectedValue;
+
+            }
+        </script>
+
+    </body>
+</html>

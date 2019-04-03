@@ -47,6 +47,7 @@ Thumbs.db
 package/
 
 # Project specific files and directories
+*.jpg
 datasets/
 CSV-files/
 flower-images/

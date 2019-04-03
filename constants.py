@@ -40,5 +40,3 @@ TOTAL_NUM_CLASSES = 17
 REMOVED_NUM_CLASSES = 7  # First REMOVED_NUM_CLASSES are removed
 FLOWER_NAMES = ["Daffodil", "Snowdrop", "Lily Valley", "Bluebell", "Crocus", "Iris", "Tigerlily", "Tulip", "Fritillary",
                 "Sunflower", "Daisy", "Colts' Foot", "Dandelion", "Cowslip", "Buttercup", "Windflower", "Pansy"]
-
-

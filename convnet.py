@@ -130,6 +130,27 @@ def cnn_model(input_x, training_phase):
     return {"logits": logits, "classes": classes}
 
 
+def calculate_per_class_accuracy_from_confusion_matrix(confusion_matrix, num_classes):
+    """
+    :param confusion_matrix:
+    :param num_classes:
+    :return:
+    """
+    true_positives = np.diag(confusion_matrix)
+    false_positives = np.sum(confusion_matrix, axis=0) - true_positives
+    false_negatives = np.sum(confusion_matrix, axis=1) - false_positives
+    true_negatives = []
+
+    for i in range(num_classes):
+        temp = np.delete(confusion_matrix, i, 0)
+        temp = np.delete(temp, i, 1)
+        true_negatives.append(sum(sum(temp)))
+
+    per_class_accuracy = np.divide(true_positives, true_positives + true_negatives + false_positives + false_negatives)
+
+    return per_class_accuracy
+
+
 def train_and_save_network():
     """
 
@@ -184,9 +205,9 @@ def train_and_save_network():
     _, accuracy_op = tf.metrics.accuracy(labels=tf.argmax(y_placeholder, 1), predictions=classes,
                                          name="accuracy_calculator")
     _, recall_op = tf.metrics.recall(labels=tf.argmax(y_placeholder, 1), predictions=classes,
-                                     name="recall_calculator")
+                                     name="recall_calculator")  # only useful for binary classification
     _, precision_op = tf.metrics.precision(labels=tf.argmax(y_placeholder, 1), predictions=classes,
-                                           name="precision_calculator")
+                                           name="precision_calculator")  # only useful for binary classification
     confusion_matrix_op = tf.confusion_matrix(labels=tf.argmax(y_placeholder, 1), predictions=classes,
                                               name="cm_calculator")
 
@@ -228,21 +249,24 @@ def train_and_save_network():
 
                 # At the end of each epoch, calculate performance metrics over test set and record
                 train_accuracy = epoch_train_accuracy / num_batches
-                test_accuracy, test_precision, test_recall = sess.run([accuracy_op, precision_op, recall_op],
-                                                                      feed_dict={x_placeholder: test_data,
-                                                                                 y_placeholder: test_labels_one_hot,
-                                                                                 is_train: 0})
-                test_f1 = 2 * (test_recall * test_precision) / (test_recall + test_precision)
+                test_accuracy, confusion_matrix = sess.run([accuracy_op, confusion_matrix_op],
+                                                           feed_dict={x_placeholder: test_data,
+                                                                      y_placeholder: test_labels_one_hot,
+                                                                      is_train: 0})
+                per_class_accuracy = list(calculate_per_class_accuracy_from_confusion_matrix(confusion_matrix,
+                                                                                             NUM_CLASSES))
 
                 # Columns on the metric list are:
-                # TRAIN LOSS, TRAIN ACCURACY, TEST ACCURACY, TEST PRECISION, TEST RECALL, TEST F1
-                metrics_per_epoch.append([epoch_loss, train_accuracy, test_accuracy,
-                                          test_precision, test_recall, test_f1])
+                # TRAIN LOSS, TRAIN ACCURACY, TEST ACCURACY, PER CLASS ACCURACIES
+                metrics = [epoch_loss, train_accuracy, test_accuracy]
+                metrics.extend(per_class_accuracy)
+
+                metrics_per_epoch.append(metrics)
 
                 print("\nEpoch {}/{} completed.\nTrain Loss: {}\nTrain Accuracy: {}\n"
-                      "Test Accuracy: {}\nTest Precision: {}\n"
-                      "Test Recall: {}\nTest F1: {}".format(epoch, NUM_EPOCHS, epoch_loss, train_accuracy,
-                                                            test_accuracy, test_precision, test_recall, test_f1))
+                      "Test Accuracy: {}\nPer Class Test Accuracies: {}".format(epoch, NUM_EPOCHS, epoch_loss,
+                                                                                train_accuracy, test_accuracy,
+                                                                                np.round(per_class_accuracy, 5)))
 
                 # Save the model at the end of training
                 if epoch == NUM_EPOCHS - 1:

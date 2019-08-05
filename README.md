@@ -15,7 +15,7 @@ A small convnet trained on University of Oxford 17 flowers dataset using Tensorf
 
 ## Usage
 
-- Train network by calling "convnet.py train". Tensorflow will save model in /models after training is completed. When training completes, this function also saves accuracies, precision, recall, F1 score, and confusion matrix over the test set recorded at each epoch. 
+- Train network by calling "convnet.py train". Tensorflow will save model in /models after training is completed. When training completes, this function also saves accuracies, per class accuracies (for multiclass classification), and confusion matrix over the test set recorded at each epoch.
 
 - When model is trained, you can run predictions over the whole test set by calling "convnet.py test". This returns the overall accuracy over the test set. 
 

@@ -19,6 +19,6 @@ A small convnet trained on University of Oxford 17 flowers dataset using Tensorf
 
 - When model is trained, you can run predictions over the whole test set by calling "convnet.py test". This returns the overall accuracy over the test set. 
 
-- With a trained model, it is also possible to run predictions and get visualisations of filters of first convolutional layer of model on an image. Run "convnet.py activation $IMAGENAME" where $IMAGENAME is an image in /flower-images-resized directory.
+- With a trained model, it is also possible to run predictions and get visualisations of filters of first convolutional layer of model on an image. Run "convnet.py activation $IMAGENAME" where $IMAGENAME is an image in /flower-images-resized directory. The output activation image will be saved in /activation-images.
 
 - We can visualise activations over a Flask web server as well. Run "webapp.py" to start server, and navigate to "localhost:5001/cnn\_visualise\_activations/

@@ -1,5 +1,5 @@
 numpy==1.15.4
-opencv_python==4.0.0.21
+opencv_python==4.2.0.32
 scikit_image==0.14.0
 scipy==1.2.1
 Flask==1.0.2
